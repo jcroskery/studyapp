@@ -1,0 +1,7 @@
+<gresources>
+    <gresource prefix="/tk/olmmcc/study">
+        <file>study.css</file>
+        <file>check.png</file>
+        <file>not_completed.png</file>
+    </gresource>
+</gresources>
