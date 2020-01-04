@@ -42,9 +42,9 @@ impl Resources {
                 StyleContext::add_provider_for_screen(&Screen::get_default().unwrap(), &css, 1);
             }
             Resources {
-                check: Self::get_pixbuf(gresource.clone(), "tk/olmmcc/study/check.png"),
-                x: Self::get_pixbuf(gresource.clone(), "tk/olmmcc/study/x.png"),
-                not_completed: Self::get_pixbuf(gresource, "tk/olmmcc/study/not_completed.png"),
+                check: Self::get_pixbuf(gresource.clone(), "/tk/olmmcc/study/check.png"),
+                x: Self::get_pixbuf(gresource.clone(), "/tk/olmmcc/study/x.png"),
+                not_completed: Self::get_pixbuf(gresource.clone(), "/tk/olmmcc/study/not_completed.png"),
             }
         } else {
             Resources {
