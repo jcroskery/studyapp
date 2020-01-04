@@ -32,7 +32,7 @@ impl App {
                 "doom".to_string(),
                 None,
                 "A bad thing".to_string(),
-                Resources::get_image(resources.not_completed.clone()),
+                Resources::get_image(resources.check.clone()),
             ));
         }
         window.show_all();
@@ -41,7 +41,7 @@ impl App {
 }
 
 fn main() {
-    let application = Application::new(Some("tk.olmmcc.rusic"), ApplicationFlags::empty())
+    let application = Application::new(Some("tk.olmmcc.study"), ApplicationFlags::empty())
         .expect("Application initialization failed!");
     application.connect_startup(|application| {
         App::new(application);
