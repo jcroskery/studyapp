@@ -3,9 +3,10 @@ use crate::data::Data;
 use std::path::PathBuf;
 
 use gdk::Screen;
-use gio::{Resource, ResourceLookupFlags, Cancellable};
+use glib::Bytes;
+use gio::{Cancellable, MemoryInputStream};
 use gtk::prelude::*;
-use gtk::{CssProvider, Image, StyleContext};
+use gtk::{CssProvider, Image, StyleContext, Builder, Application};
 use gdk_pixbuf::Pixbuf;
 
 pub fn read_file(data: Data, file: PathBuf) -> Data {
@@ -24,34 +25,19 @@ impl Resources {
             Image::new()
         }
     }
-    fn get_pixbuf(gresource: Resource, image_path: &str) -> Option<Pixbuf> {
-        if let Ok(input) = gresource.open_stream(image_path, ResourceLookupFlags::empty()) {
-            if let Ok(pixbuf) = Pixbuf::new_from_stream::<_, Cancellable>(&input, None) {
-                return Some(pixbuf);
-            }
-        }
-        None
+    fn get_pixbuf(image: &'static [u8]) -> Option<Pixbuf> {
+        Pixbuf::new_from_stream::<_, Cancellable>(&MemoryInputStream::new_from_bytes(&Bytes::from_static(image)), None).ok()
     }
-    pub fn new(path: &str) -> Self {
-        if let Ok(gresource) = Resource::load(path) {
-            if let Ok(bytes) =
-                gresource.lookup_data("/tk/olmmcc/rusic/rusic.css", ResourceLookupFlags::empty())
-            {
-                let css = CssProvider::new();
-                css.load_from_data(&bytes).unwrap_or_default();
-                StyleContext::add_provider_for_screen(&Screen::get_default().unwrap(), &css, 1);
-            }
-            Resources {
-                check: Self::get_pixbuf(gresource.clone(), "/tk/olmmcc/study/check.png"),
-                x: Self::get_pixbuf(gresource.clone(), "/tk/olmmcc/study/x.png"),
-                not_completed: Self::get_pixbuf(gresource.clone(), "/tk/olmmcc/study/not_completed.png"),
-            }
-        } else {
-            Resources {
-                check: None,
-                x: None,
-                not_completed: None,
-            }
+    pub fn new(application: &Application) -> Self {
+        let css = CssProvider::new();
+        css.load_from_data(&include_str!("../study.css").as_bytes()).unwrap_or_default();
+        StyleContext::add_provider_for_screen(&Screen::get_default().unwrap(), &css, 1);
+        let builder = Builder::new_from_string(include_str!("../window.ui"));
+        builder.set_application(application);
+        Resources {
+            check: Self::get_pixbuf(include_bytes!("../check.png")),
+            x: Self::get_pixbuf(include_bytes!("../x.png")),
+            not_completed: Self::get_pixbuf(include_bytes!("../not_completed.png")),
         }
     }
 }

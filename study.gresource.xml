@@ -1,5 +1,6 @@
 <gresources>
     <gresource prefix="/tk/olmmcc/study">
+        <file preprocess="xml-stripblanks">window.ui</file>
         <file>study.css</file>
         <file>check.png</file>
         <file>x.png</file>
