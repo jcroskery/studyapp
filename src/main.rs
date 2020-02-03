@@ -13,26 +13,28 @@ use gtk::{
 use std::env;
 
 use data::{Data, Row};
-use file::Resources;
+use file::Images;
 
 struct App {}
 
 impl App {
     pub fn new(application: &Application) -> Self {
+        let images = Images::new();
         let window = ApplicationWindow::new(application);
         window.set_title("Study");
-        let resources = Resources::new();
-        let window: Window = resources.builder.get_object("mainWindow").unwrap();
-        let mut data = Data::new(resources.builder.get_object("listbox").unwrap());
+        let builder = file::get_builder();
+        let window: Window = builder.get_object("mainWindow").unwrap();
+        let mut data = Data::new(builder.clone());
         for i in 1..100 {
             data.add(Row::new(
-                "doom".to_string(),
+                format!("doom{}", i),
                 None,
                 "A bad thing".to_string(),
-                Resources::get_image(resources.not_completed.clone()),
-            ), i);
+                i,
+                images.clone(),
+            ));
         }
-        data.display_selected(resources.builder);
+        data.display_selected();
         window.show_all();
         App {}
     }
