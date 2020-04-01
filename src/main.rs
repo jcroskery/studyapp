@@ -25,15 +25,7 @@ impl App {
         let builder = file::get_builder();
         let window: Window = builder.get_object("mainWindow").unwrap();
         let mut data = Data::new(builder.clone());
-        for i in 1..100 {
-            data.add(Row::new(
-                format!("doom{}", i),
-                None,
-                "A bad thing".to_string(),
-                i,
-                images.clone(),
-            ));
-        }
+        file::read_file(&mut data, &images, "music.json");
         data.display_selected();
         window.show_all();
         App {}

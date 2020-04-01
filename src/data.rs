@@ -58,7 +58,7 @@ impl Row {
         hbox.set_widget_name(&id.to_string());
         let term_label = Label::new(Some(&term));
         let colon = Label::new(Some(":"));
-        let definition_label = Label::new(Some(&definition));
+        let definition_label = Label::new(None);
         let state = State::UNANSWERED;
         let image = state.get_image(images.clone());
         hbox.add(&term_label);
@@ -80,6 +80,8 @@ impl Row {
         self.state = State::CORRECT;
         let gtk_row: gtk::Box = Cast::downcast(self.box_row.get_children()[0].clone()).unwrap();
         gtk_row.remove(gtk_row.get_children().last().unwrap());
+        let definition_label: Label = Cast::downcast(gtk_row.get_children().last().unwrap().clone()).unwrap();
+        definition_label.set_text(&self.definition);
         let image = &self.state.get_image(self.images.clone());
         gtk_row.add(image);
         image.show();
@@ -88,6 +90,8 @@ impl Row {
         self.state = State::WRONG;
         let gtk_row: gtk::Box = Cast::downcast(self.box_row.get_children()[0].clone()).unwrap();
         gtk_row.remove(gtk_row.get_children().last().unwrap());
+        let definition_label: Label = Cast::downcast(gtk_row.get_children().last().unwrap().clone()).unwrap();
+        definition_label.set_text(&self.definition);
         let image = &self.state.get_image(self.images.clone());
         gtk_row.add(image);
         image.show();
