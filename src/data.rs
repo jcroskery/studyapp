@@ -1,4 +1,5 @@
 use std::cell::RefCell;
+use std::rc::Rc;
 use std::collections::HashMap;
 
 use glib::object::Cast;
@@ -18,6 +19,7 @@ enum State {
 pub struct Data {
     rows: HashMap<i32, RefCell<Row>>,
     scroll: ListBox,
+    current_row: Rc<RefCell<i32>>,
     builder: Builder,
 }
 #[derive(Clone)]
@@ -108,6 +110,7 @@ impl Data {
         Data {
             rows: HashMap::new(),
             scroll: builder.get_object("listbox").unwrap(),
+            current_row: Rc::new(RefCell::new(0)),
             builder,
         }
     }
@@ -118,6 +121,8 @@ impl Data {
     pub fn display_selected(&self) {
         let list: ListBox = self.builder.get_object("listbox").unwrap();
         let term_label: Label = self.builder.get_object("term").unwrap();
+        let term_label2 = term_label.clone();
+        let question: Label = self.builder.get_object("question").unwrap();
         let your_definition_label: Label = self.builder.get_object("your_definition").unwrap();
         let correct_definition_label: Label = self.builder.get_object("correct_definition").unwrap();
         let definition_label: Label = self.builder.get_object("definition").unwrap();
@@ -126,6 +131,7 @@ impl Data {
         let correct_box: gtk::Box = self.builder.get_object("correct_box").unwrap();
         let definition_box: gtk::Box = self.builder.get_object("definition_box").unwrap();
         let rows = self.rows.clone();
+        let current_row = self.current_row.clone();
         list.connect_row_selected(move |_, row| {
             let gtk_box = row.unwrap().get_children()[0].clone();
             let id = gtk_box
@@ -134,8 +140,10 @@ impl Data {
                 .to_string()
                 .parse()
                 .unwrap();
+            current_row.replace(id);
             let mut row = rows.get(&id).unwrap().clone().into_inner();
             term_label.set_text(&row.term);
+            question.set_text(&format!("What is the meaning of {}?", row.term));
             your_definition_label.set_text(&row.user_definition.clone().unwrap_or_default());
             correct_definition_label.set_text(&row.definition);
             definition_label.set_text(&row.definition);
@@ -156,7 +164,26 @@ impl Data {
                     definition_box.show();
                 }
             }
-            row.set_incorrect();
+        });
+        let answer_entry: gtk::Entry = self.builder.get_object("answer").unwrap();
+        let enter: gtk::Button = self.builder.get_object("enter").unwrap();
+        let current_row = self.current_row.clone();
+        let rows = self.rows.clone();
+        enter.connect_clicked(move |_| {
+            let id = current_row.borrow();
+            let mut row = rows.get(&id).unwrap().clone().into_inner();
+            let user_definition = format!("{}", answer_entry.get_text().unwrap());
+            if is_answer_correct(&user_definition, &row.definition) {
+                row.set_correct();
+                term_label2.set_text("HI");
+            } else {
+                row.user_definition = Some(user_definition);
+                row.set_incorrect();
+            }
         });
     }
+}
+
+fn is_answer_correct(user_definition: &str, definition: &str) -> bool {
+    true
 }

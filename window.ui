@@ -63,13 +63,13 @@
             <property name="can_focus">False</property>
             <property name="orientation">vertical</property>
             <child>
-              <object class="GtkLabel">
+              <object class="GtkLabel" id="question">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="margin_top">6</property>
                 <property name="margin_bottom">6</property>
                 <property name="hexpand">True</property>
-                <property name="label">The term is forte. What is its meaning?</property>
+                <property name="label"></property>
                 <property name="xalign">0.5</property>
                 <attributes>
                   <attribute name="size" value="15000"/>
@@ -85,7 +85,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEntry">
+              <object class="GtkEntry" id="answer">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="margin_left">5</property>
@@ -99,7 +99,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton">
+              <object class="GtkButton" id="enter">
                 <property name="label">Enter</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
