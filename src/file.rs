@@ -2,8 +2,6 @@ use crate::data::Data;
 use crate::data::Row;
 
 use std::fs;
-use std::fs::File;
-use std::path::PathBuf;
 
 use gdk::Screen;
 use gdk_pixbuf::Pixbuf;
@@ -12,11 +10,14 @@ use glib::Bytes;
 use gtk::prelude::*;
 use gtk::{Builder, CssProvider, Image, StyleContext};
 use serde_json::Value;
+use rand::prelude::*;
 
 pub fn read_file(data: &mut Data, images: &Images, file: &str) {
     let value: Value = serde_json::from_str(&fs::read_to_string(file).unwrap()).unwrap();
     let mut i = 0;
-    for key in value.as_object().unwrap().keys() {
+    let mut keys: Vec<&String> = value.as_object().unwrap().keys().collect();
+    keys.shuffle(&mut rand::thread_rng());
+    for key in keys {
         let definition: String = serde_json::from_value(value[key].clone()).unwrap();
         data.add(Row::new(
             key.to_string(),

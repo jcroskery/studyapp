@@ -1,23 +1,23 @@
 use std::cell::RefCell;
-use std::rc::Rc;
 use std::collections::HashMap;
+use std::rc::Rc;
 
 use glib::object::Cast;
 use glib::GString;
 use gtk::prelude::*;
 use gtk::Orientation::Horizontal;
-use gtk::{Builder, Image, Label, ListBox, ListBoxRow, Widget};
+use gtk::{Builder, Image, Label, ListBox, ListBoxRow};
 
 use crate::file::Images;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 enum State {
     UNANSWERED,
     WRONG,
     CORRECT,
 }
 pub struct Data {
-    rows: HashMap<i32, RefCell<Row>>,
+    rows: Rc<RefCell<HashMap<i32, Row>>>,
     scroll: ListBox,
     current_row: Rc<RefCell<i32>>,
     builder: Builder,
@@ -35,15 +35,9 @@ pub struct Row {
 impl State {
     fn get_image(&self, images: Images) -> Image {
         match self {
-            Self::UNANSWERED => {
-                Images::to_image(images.not_completed)
-            }
-            Self::WRONG => {
-                Images::to_image(images.x)
-            }
-            Self::CORRECT => {
-                Images::to_image(images.check)
-            }
+            Self::UNANSWERED => Images::to_image(images.not_completed),
+            Self::WRONG => Images::to_image(images.x),
+            Self::CORRECT => Images::to_image(images.check),
         }
     }
 }
@@ -82,7 +76,8 @@ impl Row {
         self.state = State::CORRECT;
         let gtk_row: gtk::Box = Cast::downcast(self.box_row.get_children()[0].clone()).unwrap();
         gtk_row.remove(gtk_row.get_children().last().unwrap());
-        let definition_label: Label = Cast::downcast(gtk_row.get_children().last().unwrap().clone()).unwrap();
+        let definition_label: Label =
+            Cast::downcast(gtk_row.get_children().last().unwrap().clone()).unwrap();
         definition_label.set_text(&self.definition);
         let image = &self.state.get_image(self.images.clone());
         gtk_row.add(image);
@@ -92,23 +87,18 @@ impl Row {
         self.state = State::WRONG;
         let gtk_row: gtk::Box = Cast::downcast(self.box_row.get_children()[0].clone()).unwrap();
         gtk_row.remove(gtk_row.get_children().last().unwrap());
-        let definition_label: Label = Cast::downcast(gtk_row.get_children().last().unwrap().clone()).unwrap();
+        let definition_label: Label =
+            Cast::downcast(gtk_row.get_children().last().unwrap().clone()).unwrap();
         definition_label.set_text(&self.definition);
         let image = &self.state.get_image(self.images.clone());
         gtk_row.add(image);
         image.show();
     }
-    fn get_term(&self) -> String {
-        self.term.clone()
-    }
-    fn get_definition(&self) -> String {
-        self.definition.clone()
-    }
 }
 impl Data {
     pub fn new(builder: Builder) -> Self {
         Data {
-            rows: HashMap::new(),
+            rows: Rc::new(RefCell::new(HashMap::new())),
             scroll: builder.get_object("listbox").unwrap(),
             current_row: Rc::new(RefCell::new(0)),
             builder,
@@ -116,15 +106,15 @@ impl Data {
     }
     pub fn add(&mut self, row: Row) {
         self.scroll.add(&row.box_row);
-        self.rows.insert(row.id, RefCell::new(row));
+        self.rows.borrow_mut().insert(row.id, row);
     }
     pub fn display_selected(&self) {
         let list: ListBox = self.builder.get_object("listbox").unwrap();
         let term_label: Label = self.builder.get_object("term").unwrap();
-        let term_label2 = term_label.clone();
         let question: Label = self.builder.get_object("question").unwrap();
         let your_definition_label: Label = self.builder.get_object("your_definition").unwrap();
-        let correct_definition_label: Label = self.builder.get_object("correct_definition").unwrap();
+        let correct_definition_label: Label =
+            self.builder.get_object("correct_definition").unwrap();
         let definition_label: Label = self.builder.get_object("definition").unwrap();
 
         let your_box: gtk::Box = self.builder.get_object("your_box").unwrap();
@@ -141,7 +131,8 @@ impl Data {
                 .parse()
                 .unwrap();
             current_row.replace(id);
-            let mut row = rows.get(&id).unwrap().clone().into_inner();
+            let hash_map = rows.borrow();
+            let row = hash_map.get(&id).unwrap();
             term_label.set_text(&row.term);
             question.set_text(&format!("What is the meaning of {}?", row.term));
             your_definition_label.set_text(&row.user_definition.clone().unwrap_or_default());
@@ -169,21 +160,58 @@ impl Data {
         let enter: gtk::Button = self.builder.get_object("enter").unwrap();
         let current_row = self.current_row.clone();
         let rows = self.rows.clone();
+        let your_definition_label: Label = self.builder.get_object("your_definition").unwrap();
+        let your_box: gtk::Box = self.builder.get_object("your_box").unwrap();
+        let correct_box: gtk::Box = self.builder.get_object("correct_box").unwrap();
+        let definition_box: gtk::Box = self.builder.get_object("definition_box").unwrap();
+        let list: ListBox = self.builder.get_object("listbox").unwrap();
         enter.connect_clicked(move |_| {
-            let id = current_row.borrow();
-            let mut row = rows.get(&id).unwrap().clone().into_inner();
-            let user_definition = format!("{}", answer_entry.get_text().unwrap());
-            if is_answer_correct(&user_definition, &row.definition) {
-                row.set_correct();
-                term_label2.set_text("HI");
-            } else {
-                row.user_definition = Some(user_definition);
-                row.set_incorrect();
+            let id;
+            {
+                id = *current_row.borrow();
+                let mut hash_map = rows.borrow_mut();
+                let mut row = hash_map.get_mut(&id).unwrap();
+                if row.state == State::UNANSWERED {
+                    let user_definition = format!("{}", answer_entry.get_text().unwrap());
+                    if is_answer_correct(&user_definition, &row.definition) {
+                        row.set_correct();
+                        your_box.hide();
+                        correct_box.hide();
+                        definition_box.show();
+                    } else {
+                        row.user_definition = Some(user_definition.clone());
+                        row.set_incorrect();
+                        your_definition_label.set_text(&user_definition);
+                        your_box.show();
+                        correct_box.show();
+                        definition_box.hide();
+                    }
+                    if is_complete(&hash_map) {
+                        println!("done");
+                    }
+                } else {
+                    return;
+                }
+            }
+            let children = list.get_children();
+            if (id + 1) < children.len() as i32 {
+                let listboxrow: gtk::ListBoxRow =
+                    Cast::downcast(children[(id + 1) as usize].clone()).unwrap();
+                list.select_row(Some(&listboxrow));
             }
         });
     }
 }
 
 fn is_answer_correct(user_definition: &str, definition: &str) -> bool {
+    false
+}
+
+fn is_complete(rows: &HashMap<i32, Row>) -> bool {
+    for (_, row) in rows {
+        if row.state == State::UNANSWERED {
+            return false;
+        }
+    }
     true
 }
