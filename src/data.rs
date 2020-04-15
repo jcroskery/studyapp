@@ -21,6 +21,9 @@ pub struct Data {
     scroll: ListBox,
     current_row: Rc<RefCell<i32>>,
     builder: Builder,
+    correct: i32,
+    incorrect: i32,
+    unanswered: i32,
 }
 #[derive(Clone)]
 pub struct Row {
@@ -102,11 +105,15 @@ impl Data {
             scroll: builder.get_object("listbox").unwrap(),
             current_row: Rc::new(RefCell::new(0)),
             builder,
+            correct: 0, 
+            incorrect: 0, 
+            unanswered: 0,
         }
     }
     pub fn add(&mut self, row: Row) {
         self.scroll.add(&row.box_row);
         self.rows.borrow_mut().insert(row.id, row);
+        self.unanswered += 1;
     }
     pub fn display_selected(&self) {
         let list: ListBox = self.builder.get_object("listbox").unwrap();
@@ -204,7 +211,11 @@ impl Data {
 }
 
 fn is_answer_correct(user_definition: &str, definition: &str) -> bool {
-    false
+    if user_definition.to_lowercase() == definition.to_lowercase() {
+        true
+    } else {
+        false
+    }
 }
 
 fn is_complete(rows: &HashMap<i32, Row>) -> bool {

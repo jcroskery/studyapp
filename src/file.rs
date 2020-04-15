@@ -12,8 +12,8 @@ use gtk::{Builder, CssProvider, Image, StyleContext};
 use serde_json::Value;
 use rand::prelude::*;
 
-pub fn read_file(data: &mut Data, images: &Images, file: &str) {
-    let value: Value = serde_json::from_str(&fs::read_to_string(file).unwrap()).unwrap();
+pub fn read_file(data: &mut Data, images: &Images) {
+    let value: Value = serde_json::from_str(include_str!("../music.json")).unwrap();
     let mut i = 0;
     let mut keys: Vec<&String> = value.as_object().unwrap().keys().collect();
     keys.shuffle(&mut rand::thread_rng());
