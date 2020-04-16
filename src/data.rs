@@ -6,7 +6,7 @@ use glib::object::Cast;
 use glib::GString;
 use gtk::prelude::*;
 use gtk::Orientation::Horizontal;
-use gtk::{Builder, Image, Label, ListBox, ListBoxRow};
+use gtk::{Builder, Image, Label, ListBox, ListBoxRow, EntryBuffer};
 
 use crate::file::Images;
 
@@ -114,6 +114,7 @@ impl Data {
         self.scroll.add(&row.box_row);
         self.rows.borrow_mut().insert(row.id, row);
         self.unanswered += 1;
+        self.builder.get_object::<Label>("unanswered").unwrap().set_text(&format!("Unanswered: {}", self.unanswered));
     }
     pub fn display_selected(&self) {
         let list: ListBox = self.builder.get_object("listbox").unwrap();
@@ -172,6 +173,11 @@ impl Data {
         let correct_box: gtk::Box = self.builder.get_object("correct_box").unwrap();
         let definition_box: gtk::Box = self.builder.get_object("definition_box").unwrap();
         let list: ListBox = self.builder.get_object("listbox").unwrap();
+        let questions_box: gtk::Box = self.builder.get_object("questions_box").unwrap();
+        let congrats: Label = self.builder.get_object("congrats").unwrap();
+        let unanswered: Label = self.builder.get_object("unanswered").unwrap();
+        let correct: Label = self.builder.get_object("correct").unwrap();
+        let incorrect: Label = self.builder.get_object("incorrect").unwrap();
         enter.connect_clicked(move |_| {
             let id;
             {
@@ -194,7 +200,8 @@ impl Data {
                         definition_box.hide();
                     }
                     if is_complete(&hash_map) {
-                        println!("done");
+                        questions_box.hide();
+                        congrats.set_text("Congratulations! To restart,\nclick the refresh button in the upper right.");
                     }
                 } else {
                     return;
@@ -206,6 +213,7 @@ impl Data {
                     Cast::downcast(children[(id + 1) as usize].clone()).unwrap();
                 list.select_row(Some(&listboxrow));
             }
+            answer_entry.set_buffer(&EntryBuffer::new(None));
         });
     }
 }
