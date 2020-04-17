@@ -1,8 +1,6 @@
 use crate::data::Data;
 use crate::data::Row;
 
-use std::fs;
-
 use gdk::Screen;
 use gdk_pixbuf::Pixbuf;
 use gio::{Cancellable, MemoryInputStream};

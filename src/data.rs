@@ -118,7 +118,92 @@ impl Data {
         *self.unanswered.borrow_mut() += 1;
         self.builder.get_object::<Label>("unanswered").unwrap().set_text(&format!("Unanswered: {}", self.unanswered.borrow()));
     }
-    pub fn display_selected(&self) {
+    pub fn connect_submit_answer(&self) {
+        let answer_entry: gtk::Entry = self.builder.get_object("answer").unwrap();
+        let enter: gtk::Button = self.builder.get_object("enter").unwrap();
+        let current_row = self.current_row.clone();
+        let rows = self.rows.clone();
+        let your_definition_label: Label = self.builder.get_object("your_definition").unwrap();
+        let your_box: gtk::Box = self.builder.get_object("your_box").unwrap();
+        let correct_box: gtk::Box = self.builder.get_object("correct_box").unwrap();
+        let definition_box: gtk::Box = self.builder.get_object("definition_box").unwrap();
+        let list: ListBox = self.builder.get_object("listbox").unwrap();
+        let questions_box: gtk::Box = self.builder.get_object("questions_box").unwrap();
+        let congrats: Label = self.builder.get_object("congrats").unwrap();
+        let unanswered_label: Label = self.builder.get_object("unanswered").unwrap();
+        let correct_label: Label = self.builder.get_object("correct").unwrap();
+        let incorrect_label: Label = self.builder.get_object("incorrect").unwrap();
+        let incorrect = self.incorrect.clone();
+        let unanswered = self.unanswered.clone();
+        let correct =  self.correct.clone();
+        enter.connect_clicked(move |_| {
+            let id;
+            {
+                id = *current_row.borrow();
+                let mut hash_map = rows.borrow_mut();
+                let mut row = hash_map.get_mut(&id).unwrap();
+                if row.state == State::UNANSWERED {
+                    let user_definition = format!("{}", answer_entry.get_text().unwrap());
+                    set(&unanswered, Some(-1), None, &unanswered_label, "Unanswered");
+                    if is_answer_correct(&user_definition, &row.definition) {
+                        row.set_correct();
+                        your_box.hide();
+                        correct_box.hide();
+                        definition_box.show();
+                        set(&correct, Some(1), None, &correct_label, "Correct");
+                    } else {
+                        row.user_definition = Some(user_definition.clone());
+                        row.set_incorrect();
+                        your_definition_label.set_text(&user_definition);
+                        your_box.show();
+                        correct_box.show();
+                        definition_box.hide();
+                        set(&incorrect, Some(1), None, &incorrect_label, "Incorrect");
+                    }
+                    if is_complete(&hash_map) {
+                        questions_box.hide();
+                        unanswered_label.hide();
+                        congrats.set_text("Congratulations! To restart,\nclick the refresh button in the upper right.");
+                    }
+                } else {
+                    return;
+                }
+            }
+            let children = list.get_children();
+            if (id + 1) < children.len() as i32 {
+                let listboxrow: gtk::ListBoxRow =
+                    Cast::downcast(children[(id + 1) as usize].clone()).unwrap();
+                list.select_row(Some(&listboxrow));
+            }
+            answer_entry.set_buffer(&EntryBuffer::new(None));
+        });
+    }
+    pub fn connect_enter_keypress(&self) {
+        let answer_entry: gtk::Entry = self.builder.get_object("answer").unwrap();
+        let enter: gtk::Button = self.builder.get_object("enter").unwrap();
+        answer_entry.connect_activate(move |_| {
+            enter.emit_clicked();
+        });
+    }
+    pub fn connect_refresh(&self) {
+        let unanswered_label: Label = self.builder.get_object("unanswered").unwrap();
+        let correct_label: Label = self.builder.get_object("correct").unwrap();
+        let incorrect_label: Label = self.builder.get_object("incorrect").unwrap();
+        let incorrect = self.incorrect.clone();
+        let unanswered = self.unanswered.clone();
+        let correct =  self.correct.clone();
+        let refresh_button: gtk::Button = self.builder.get_object("refresh").unwrap();
+        refresh_button.connect_clicked(move |_| {
+            let total;
+            {
+                total = *correct.borrow() + *incorrect.borrow() + *unanswered.borrow();
+            }
+            set(&unanswered, None, Some(total), &unanswered_label, "Unanswered");
+            set(&incorrect, None, Some(0), &incorrect_label, "Incorrect");
+            set(&correct, None, Some(0), &correct_label, "Correct");
+        });
+    }
+    pub fn connect_display_selected(&self) {
         let list: ListBox = self.builder.get_object("listbox").unwrap();
         let term_label: Label = self.builder.get_object("term").unwrap();
         let question: Label = self.builder.get_object("question").unwrap();
@@ -166,67 +251,6 @@ impl Data {
                 }
             }
         });
-        let answer_entry: gtk::Entry = self.builder.get_object("answer").unwrap();
-        let enter: gtk::Button = self.builder.get_object("enter").unwrap();
-        let current_row = self.current_row.clone();
-        let rows = self.rows.clone();
-        let your_definition_label: Label = self.builder.get_object("your_definition").unwrap();
-        let your_box: gtk::Box = self.builder.get_object("your_box").unwrap();
-        let correct_box: gtk::Box = self.builder.get_object("correct_box").unwrap();
-        let definition_box: gtk::Box = self.builder.get_object("definition_box").unwrap();
-        let list: ListBox = self.builder.get_object("listbox").unwrap();
-        let questions_box: gtk::Box = self.builder.get_object("questions_box").unwrap();
-        let congrats: Label = self.builder.get_object("congrats").unwrap();
-        let unanswered_label: Label = self.builder.get_object("unanswered").unwrap();
-        let correct_label: Label = self.builder.get_object("correct").unwrap();
-        let incorrect_label: Label = self.builder.get_object("incorrect").unwrap();
-        let incorrect = self.incorrect.clone();
-        let unanswered = self.unanswered.clone();
-        let correct =  self.correct.clone();
-        enter.connect_clicked(move |_| {
-            let id;
-            {
-                id = *current_row.borrow();
-                let mut hash_map = rows.borrow_mut();
-                let mut row = hash_map.get_mut(&id).unwrap();
-                if row.state == State::UNANSWERED {
-                    let user_definition = format!("{}", answer_entry.get_text().unwrap());
-                    *unanswered.borrow_mut() -= 1;
-                    unanswered_label.set_text(&format!("Unanswered: {}", unanswered.borrow()));
-                    if is_answer_correct(&user_definition, &row.definition) {
-                        row.set_correct();
-                        your_box.hide();
-                        correct_box.hide();
-                        definition_box.show();
-                        *correct.borrow_mut() += 1;
-                        correct_label.set_text(&format!("Correct: {}", correct.borrow()));
-                    } else {
-                        row.user_definition = Some(user_definition.clone());
-                        row.set_incorrect();
-                        your_definition_label.set_text(&user_definition);
-                        your_box.show();
-                        correct_box.show();
-                        definition_box.hide();
-                        *incorrect.borrow_mut() += 1;
-                        incorrect_label.set_text(&format!("Incorrect: {}", incorrect.borrow()));
-                    }
-                    if is_complete(&hash_map) {
-                        questions_box.hide();
-                        unanswered_label.hide();
-                        congrats.set_text("Congratulations! To restart,\nclick the refresh button in the upper right.");
-                    }
-                } else {
-                    return;
-                }
-            }
-            let children = list.get_children();
-            if (id + 1) < children.len() as i32 {
-                let listboxrow: gtk::ListBoxRow =
-                    Cast::downcast(children[(id + 1) as usize].clone()).unwrap();
-                list.select_row(Some(&listboxrow));
-            }
-            answer_entry.set_buffer(&EntryBuffer::new(None));
-        });
     }
 }
 
@@ -236,6 +260,15 @@ fn is_answer_correct(user_definition: &str, definition: &str) -> bool {
     } else {
         false
     }
+}
+
+fn set(var: &Rc<RefCell<i32>>, increase: Option<i32>, value: Option<i32>, label: &Label, name: &str) {
+    if let Some(increase) = increase {
+        *var.borrow_mut() += increase;
+    } else if let Some(value) = value {
+        *var.borrow_mut() = value;
+    }
+    label.set_text(&format!("{}: {}", name, var.borrow()));
 }
 
 fn is_complete(rows: &HashMap<i32, Row>) -> bool {

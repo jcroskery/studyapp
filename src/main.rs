@@ -4,15 +4,11 @@ mod file;
 use gio::prelude::ApplicationExtManual;
 use gio::{ApplicationExt};
 use gtk::prelude::*;
-use gtk::Orientation::{Horizontal, Vertical};
-use gtk::{
-    Adjustment, Application, ApplicationWindow, Entry, Label, ListBox, PolicyType, ScrolledWindow,
-    Separator, Window,
-};
+use gtk::{Application, ApplicationWindow, Window};
 
 use std::env;
 
-use data::{Data, Row};
+use data::Data;
 use file::Images;
 
 fn main() {
@@ -27,7 +23,10 @@ fn main() {
         let window: Window = builder.get_object("mainWindow").unwrap();
         let mut data = Data::new(builder.clone());
         file::read_file(&mut data, &images);
-        data.display_selected();
+        data.connect_display_selected();
+        data.connect_enter_keypress();
+        data.connect_refresh();
+        data.connect_submit_answer();
         window.show_all();
     });
     application.run(&env::args().collect::<Vec<_>>());
