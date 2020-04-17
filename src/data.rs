@@ -21,9 +21,9 @@ pub struct Data {
     scroll: ListBox,
     current_row: Rc<RefCell<i32>>,
     builder: Builder,
-    correct: i32,
-    incorrect: i32,
-    unanswered: i32,
+    correct: Rc<RefCell<i32>>,
+    incorrect: Rc<RefCell<i32>>,
+    unanswered: Rc<RefCell<i32>>,
 }
 #[derive(Clone)]
 pub struct Row {
@@ -58,6 +58,8 @@ impl Row {
         let term_label = Label::new(Some(&term));
         let colon = Label::new(Some(":"));
         let definition_label = Label::new(None);
+        definition_label.set_max_width_chars(50);
+        definition_label.set_line_wrap(true);
         let state = State::UNANSWERED;
         let image = state.get_image(images.clone());
         hbox.add(&term_label);
@@ -105,16 +107,16 @@ impl Data {
             scroll: builder.get_object("listbox").unwrap(),
             current_row: Rc::new(RefCell::new(0)),
             builder,
-            correct: 0, 
-            incorrect: 0, 
-            unanswered: 0,
+            correct: Rc::new(RefCell::new(0)), 
+            incorrect: Rc::new(RefCell::new(0)), 
+            unanswered: Rc::new(RefCell::new(0)),
         }
     }
     pub fn add(&mut self, row: Row) {
         self.scroll.add(&row.box_row);
         self.rows.borrow_mut().insert(row.id, row);
-        self.unanswered += 1;
-        self.builder.get_object::<Label>("unanswered").unwrap().set_text(&format!("Unanswered: {}", self.unanswered));
+        *self.unanswered.borrow_mut() += 1;
+        self.builder.get_object::<Label>("unanswered").unwrap().set_text(&format!("Unanswered: {}", self.unanswered.borrow()));
     }
     pub fn display_selected(&self) {
         let list: ListBox = self.builder.get_object("listbox").unwrap();
@@ -175,9 +177,12 @@ impl Data {
         let list: ListBox = self.builder.get_object("listbox").unwrap();
         let questions_box: gtk::Box = self.builder.get_object("questions_box").unwrap();
         let congrats: Label = self.builder.get_object("congrats").unwrap();
-        let unanswered: Label = self.builder.get_object("unanswered").unwrap();
-        let correct: Label = self.builder.get_object("correct").unwrap();
-        let incorrect: Label = self.builder.get_object("incorrect").unwrap();
+        let unanswered_label: Label = self.builder.get_object("unanswered").unwrap();
+        let correct_label: Label = self.builder.get_object("correct").unwrap();
+        let incorrect_label: Label = self.builder.get_object("incorrect").unwrap();
+        let incorrect = self.incorrect.clone();
+        let unanswered = self.unanswered.clone();
+        let correct =  self.correct.clone();
         enter.connect_clicked(move |_| {
             let id;
             {
@@ -186,11 +191,15 @@ impl Data {
                 let mut row = hash_map.get_mut(&id).unwrap();
                 if row.state == State::UNANSWERED {
                     let user_definition = format!("{}", answer_entry.get_text().unwrap());
+                    *unanswered.borrow_mut() -= 1;
+                    unanswered_label.set_text(&format!("Unanswered: {}", unanswered.borrow()));
                     if is_answer_correct(&user_definition, &row.definition) {
                         row.set_correct();
                         your_box.hide();
                         correct_box.hide();
                         definition_box.show();
+                        *correct.borrow_mut() += 1;
+                        correct_label.set_text(&format!("Correct: {}", correct.borrow()));
                     } else {
                         row.user_definition = Some(user_definition.clone());
                         row.set_incorrect();
@@ -198,9 +207,12 @@ impl Data {
                         your_box.show();
                         correct_box.show();
                         definition_box.hide();
+                        *incorrect.borrow_mut() += 1;
+                        incorrect_label.set_text(&format!("Incorrect: {}", incorrect.borrow()));
                     }
                     if is_complete(&hash_map) {
                         questions_box.hide();
+                        unanswered_label.hide();
                         congrats.set_text("Congratulations! To restart,\nclick the refresh button in the upper right.");
                     }
                 } else {
