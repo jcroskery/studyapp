@@ -7,6 +7,7 @@ use glib::GString;
 use gtk::prelude::*;
 use gtk::Orientation::Horizontal;
 use gtk::{Builder, Image, Label, ListBox, ListBoxRow, EntryBuffer};
+use rand::prelude::*;
 
 use crate::file::Images;
 
@@ -25,7 +26,7 @@ pub struct Data {
     incorrect: Rc<RefCell<i32>>,
     unanswered: Rc<RefCell<i32>>,
 }
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Row {
     term: String,
     user_definition: Option<String>,
@@ -208,6 +209,7 @@ impl Data {
         let questions_box: gtk::Box = self.builder.get_object("questions_box").unwrap();
         let congrats: Label = self.builder.get_object("congrats").unwrap();
         let list: ListBox = self.builder.get_object("listbox").unwrap();
+        let hash_map = self.rows.clone();
         refresh_button.connect_clicked(move |_| {
             let total;
             {
@@ -220,6 +222,24 @@ impl Data {
             questions_box.show();
             unanswered_label.show();
             congrats.set_text("");
+            hash_map.borrow_mut().iter_mut().map(|x| x.1).collect::<Vec<&mut Row>>().shuffle(&mut rand::thread_rng());
+            let mut i = -1;
+            let mut new_hash_map: HashMap<i32, Row> = hash_map.borrow().iter().map(|x| {i += 1; (i, x.1.clone())}).collect();
+            println!("{:?}", new_hash_map.get(&0));
+            for i in 0..total {
+                let row = &new_hash_map.get(&i).unwrap().box_row;
+                list.remove(row);
+                let row_contents: &gtk::Container = &Cast::downcast(row.get_children()[0].clone()).unwrap();
+                row.remove(row_contents);
+                let list_box_row = ListBoxRow::new();
+                list_box_row.add(row_contents);
+                new_hash_map.get_mut(&i).unwrap().box_row = list_box_row;
+            }
+            for i in 0..total {
+                list.add(&new_hash_map.get(&i).unwrap().box_row);
+                new_hash_map.get(&i).unwrap().box_row.show_all();
+            }
+            *hash_map.borrow_mut() = new_hash_map;
             list.select_row::<ListBoxRow>(None);
             list.select_row(Some(&list.get_row_at_index(0).unwrap()));
         });

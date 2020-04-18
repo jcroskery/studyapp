@@ -27,7 +27,7 @@ pub fn read_file(data: &mut Data, images: &Images) {
         i += 1;
     }
 }
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Images {
     pub x: Pixbuf,
     pub check: Pixbuf,
