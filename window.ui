@@ -395,6 +395,9 @@
                     <property name="margin_right">2</property>
                     <property name="margin_top">1</property>
                     <property name="label" translatable="yes">Unanswered: 0</property>
+                    <style>
+                      <class name="medium"/>
+                    </style>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -409,6 +412,9 @@
                     <property name="margin_left">2</property>
                     <property name="margin_right">2</property>
                     <property name="label" translatable="yes">Incorrect: 0</property>
+                    <style>
+                      <class name="medium"/>
+                    </style>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -425,6 +431,9 @@
                     <property name="margin_bottom">1</property>
                     <property name="label" translatable="yes">Correct: 0</property>
                     <property name="justify">center</property>
+                    <style>
+                      <class name="medium"/>
+                    </style>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -438,7 +447,7 @@
               </object>
               <packing>
                 <property name="expand">False</property>
-                <property name="fill">True</property>
+                <property name="fill">False</property>
                 <property name="pack_type">end</property>
                 <property name="position">1</property>
               </packing>

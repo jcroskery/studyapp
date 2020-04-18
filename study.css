@@ -2,5 +2,8 @@
     border: 1px solid black;
 }
 .big {
-    font-size: large;
+    font-size: 2em;
+}
+.medium {
+    font-size: 1.25em;
 }

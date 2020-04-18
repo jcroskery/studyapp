@@ -205,6 +205,9 @@ impl Data {
         let correct =  self.correct.clone();
         let refresh_button: gtk::Button = self.builder.get_object("refresh").unwrap();
         let rows = self.rows.clone();
+        let questions_box: gtk::Box = self.builder.get_object("questions_box").unwrap();
+        let congrats: Label = self.builder.get_object("congrats").unwrap();
+        let list: ListBox = self.builder.get_object("listbox").unwrap();
         refresh_button.connect_clicked(move |_| {
             let total;
             {
@@ -214,6 +217,11 @@ impl Data {
             set(&incorrect, None, Some(0), &incorrect_label, "Incorrect");
             set(&correct, None, Some(0), &correct_label, "Correct");
             rows.borrow_mut().iter_mut().for_each(|row| row.1.set_unanswered());
+            questions_box.show();
+            unanswered_label.show();
+            congrats.set_text("");
+            list.select_row::<ListBoxRow>(None);
+            list.select_row(Some(&list.get_row_at_index(0).unwrap()));
         });
     }
     pub fn connect_display_selected(&self) {
@@ -231,36 +239,38 @@ impl Data {
         let rows = self.rows.clone();
         let current_row = self.current_row.clone();
         list.connect_row_selected(move |_, row| {
-            let gtk_box = row.unwrap().get_children()[0].clone();
-            let id = gtk_box
-                .get_widget_name()
-                .unwrap_or(GString::from(""))
-                .to_string()
-                .parse()
-                .unwrap();
-            current_row.replace(id);
-            let hash_map = rows.borrow();
-            let row = hash_map.get(&id).unwrap();
-            term_label.set_text(&row.term);
-            question.set_text(&format!("What is the meaning of {}?", row.term));
-            your_definition_label.set_text(&row.user_definition.clone().unwrap_or_default());
-            correct_definition_label.set_text(&row.definition);
-            definition_label.set_text(&row.definition);
-            match &row.state {
-                State::UNANSWERED => {
-                    your_box.hide();
-                    correct_box.hide();
-                    definition_box.hide();
-                }
-                State::WRONG => {
-                    your_box.show();
-                    correct_box.show();
-                    definition_box.hide();
-                }
-                State::CORRECT => {
-                    your_box.hide();
-                    correct_box.hide();
-                    definition_box.show();
+            if let Some(row) = row {
+                let gtk_box = row.get_children()[0].clone();
+                let id = gtk_box
+                    .get_widget_name()
+                    .unwrap_or(GString::from(""))
+                    .to_string()
+                    .parse()
+                    .unwrap();
+                current_row.replace(id);
+                let hash_map = rows.borrow();
+                let row = hash_map.get(&id).unwrap();
+                term_label.set_text(&row.term);
+                question.set_text(&format!("What is the meaning of {}?", row.term));
+                your_definition_label.set_text(&row.user_definition.clone().unwrap_or_default());
+                correct_definition_label.set_text(&row.definition);
+                definition_label.set_text(&row.definition);
+                match &row.state {
+                    State::UNANSWERED => {
+                        your_box.hide();
+                        correct_box.hide();
+                        definition_box.hide();
+                    }
+                    State::WRONG => {
+                        your_box.show();
+                        correct_box.show();
+                        definition_box.hide();
+                    }
+                    State::CORRECT => {
+                        your_box.hide();
+                        correct_box.hide();
+                        definition_box.show();
+                    }
                 }
             }
         });
