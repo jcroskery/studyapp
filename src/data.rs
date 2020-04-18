@@ -3,7 +3,6 @@ use std::collections::HashMap;
 use std::rc::Rc;
 
 use glib::object::Cast;
-use glib::GString;
 use gtk::prelude::*;
 use gtk::Orientation::Horizontal;
 use gtk::{Builder, Image, Label, ListBox, ListBoxRow, EntryBuffer};
@@ -55,7 +54,6 @@ impl Row {
     ) -> Self {
         let box_row = ListBoxRow::new();
         let hbox = gtk::Box::new(Horizontal, 10);
-        hbox.set_widget_name(&id.to_string());
         let term_label = Label::new(Some(&term));
         let colon = Label::new(Some(":"));
         let definition_label = Label::new(None);
@@ -225,7 +223,6 @@ impl Data {
             hash_map.borrow_mut().iter_mut().map(|x| x.1).collect::<Vec<&mut Row>>().shuffle(&mut rand::thread_rng());
             let mut i = -1;
             let mut new_hash_map: HashMap<i32, Row> = hash_map.borrow().iter().map(|x| {i += 1; (i, x.1.clone())}).collect();
-            println!("{:?}", new_hash_map.get(&0));
             for i in 0..total {
                 let row = &new_hash_map.get(&i).unwrap().box_row;
                 list.remove(row);
@@ -260,13 +257,7 @@ impl Data {
         let current_row = self.current_row.clone();
         list.connect_row_selected(move |_, row| {
             if let Some(row) = row {
-                let gtk_box = row.get_children()[0].clone();
-                let id = gtk_box
-                    .get_widget_name()
-                    .unwrap_or(GString::from(""))
-                    .to_string()
-                    .parse()
-                    .unwrap();
+                let id = row.get_index();
                 current_row.replace(id);
                 let hash_map = rows.borrow();
                 let row = hash_map.get(&id).unwrap();
