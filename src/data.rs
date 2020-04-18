@@ -222,20 +222,13 @@ impl Data {
             congrats.set_text("");
             hash_map.borrow_mut().iter_mut().map(|x| x.1).collect::<Vec<&mut Row>>().shuffle(&mut rand::thread_rng());
             let mut i = -1;
-            let mut new_hash_map: HashMap<i32, Row> = hash_map.borrow().iter().map(|x| {i += 1; (i, x.1.clone())}).collect();
+            let new_hash_map: HashMap<i32, Row> = hash_map.borrow().iter().map(|x| {i += 1; (i, x.1.clone())}).collect();
             for i in 0..total {
                 let row = &new_hash_map.get(&i).unwrap().box_row;
                 list.remove(row);
-                let row_contents: &gtk::Container = &Cast::downcast(row.get_children()[0].clone()).unwrap();
-                row.remove(row_contents);
-                let list_box_row = ListBoxRow::new();
-                list_box_row.add(row_contents);
-                new_hash_map.get_mut(&i).unwrap().box_row = list_box_row;
-            }
-            for i in 0..total {
                 list.add(&new_hash_map.get(&i).unwrap().box_row);
-                new_hash_map.get(&i).unwrap().box_row.show_all();
             }
+            list.show_all();
             *hash_map.borrow_mut() = new_hash_map;
             list.select_row::<ListBoxRow>(None);
             list.select_row(Some(&list.get_row_at_index(0).unwrap()));
