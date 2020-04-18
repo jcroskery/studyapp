@@ -88,6 +88,7 @@
                   <object class="GtkLabel" id="question">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="margin_left">3</property>
                     <property name="margin_top">6</property>
                     <property name="margin_bottom">6</property>
                     <property name="hexpand">True</property>
@@ -109,6 +110,8 @@
                   <object class="GtkEntry" id="answer">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="margin_left">1</property>
+                    <property name="margin_right">1</property>
                     <property name="hexpand">True</property>
                   </object>
                   <packing>
@@ -154,10 +157,14 @@
                   <object class="GtkBox">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="halign">start</property>
                     <child>
                       <object class="GtkLabel">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="halign">start</property>
+                        <property name="valign">start</property>
+                        <property name="margin_left">3</property>
                         <property name="margin_top">3</property>
                         <property name="margin_bottom">3</property>
                         <property name="label">Term: </property>
@@ -173,6 +180,10 @@
                       <object class="GtkLabel" id="term">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="margin_top">3</property>
+                        <property name="margin_bottom">3</property>
+                        <property name="wrap">True</property>
+                        <property name="max_width_chars">100</property>
                         <property name="xalign">0</property>
                       </object>
                       <packing>
@@ -192,10 +203,14 @@
                   <object class="GtkBox" id="your_box">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="halign">start</property>
                     <child>
                       <object class="GtkLabel">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="halign">start</property>
+                        <property name="valign">start</property>
+                        <property name="margin_left">3</property>
                         <property name="margin_top">3</property>
                         <property name="margin_bottom">3</property>
                         <property name="label">Your Definition: </property>
@@ -211,6 +226,10 @@
                       <object class="GtkLabel" id="your_definition">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="margin_top">3</property>
+                        <property name="margin_bottom">3</property>
+                        <property name="wrap">True</property>
+                        <property name="max_width_chars">100</property>
                         <property name="xalign">0</property>
                       </object>
                       <packing>
@@ -230,10 +249,14 @@
                   <object class="GtkBox" id="correct_box">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="halign">start</property>
                     <child>
                       <object class="GtkLabel">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="halign">start</property>
+                        <property name="valign">start</property>
+                        <property name="margin_left">3</property>
                         <property name="margin_top">3</property>
                         <property name="margin_bottom">3</property>
                         <property name="label">Correct Definition: </property>
@@ -249,6 +272,10 @@
                       <object class="GtkLabel" id="correct_definition">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="margin_top">3</property>
+                        <property name="margin_bottom">3</property>
+                        <property name="wrap">True</property>
+                        <property name="max_width_chars">100</property>
                         <property name="xalign">0</property>
                       </object>
                       <packing>
@@ -268,10 +295,16 @@
                   <object class="GtkBox" id="definition_box">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="halign">start</property>
                     <child>
                       <object class="GtkLabel">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="halign">start</property>
+                        <property name="valign">start</property>
+                        <property name="margin_left">3</property>
+                        <property name="margin_top">3</property>
+                        <property name="margin_bottom">3</property>
                         <property name="label" translatable="yes">Definition: </property>
                         <property name="xalign">1</property>
                       </object>
@@ -285,6 +318,10 @@
                       <object class="GtkLabel" id="definition">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="margin_top">3</property>
+                        <property name="margin_bottom">3</property>
+                        <property name="wrap">True</property>
+                        <property name="max_width_chars">100</property>
                         <property name="xalign">0</property>
                       </object>
                       <packing>

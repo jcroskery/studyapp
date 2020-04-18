@@ -88,6 +88,17 @@ impl Row {
         gtk_row.add(image);
         image.show();
     }
+    fn set_unanswered(&mut self) {
+        self.state = State::UNANSWERED;
+        let gtk_row: gtk::Box = Cast::downcast(self.box_row.get_children()[0].clone()).unwrap();
+        gtk_row.remove(gtk_row.get_children().last().unwrap());
+        let definition_label: Label =
+            Cast::downcast(gtk_row.get_children().last().unwrap().clone()).unwrap();
+        definition_label.set_text("");
+        let image = &self.state.get_image(self.images.clone());
+        gtk_row.add(image);
+        image.show();
+    }
     fn set_incorrect(&mut self) {
         self.state = State::WRONG;
         let gtk_row: gtk::Box = Cast::downcast(self.box_row.get_children()[0].clone()).unwrap();
@@ -185,7 +196,7 @@ impl Data {
             enter.emit_clicked();
         });
     }
-    pub fn connect_refresh(&self) {
+    pub fn connect_refresh(&mut self) {
         let unanswered_label: Label = self.builder.get_object("unanswered").unwrap();
         let correct_label: Label = self.builder.get_object("correct").unwrap();
         let incorrect_label: Label = self.builder.get_object("incorrect").unwrap();
@@ -193,6 +204,7 @@ impl Data {
         let unanswered = self.unanswered.clone();
         let correct =  self.correct.clone();
         let refresh_button: gtk::Button = self.builder.get_object("refresh").unwrap();
+        let rows = self.rows.clone();
         refresh_button.connect_clicked(move |_| {
             let total;
             {
@@ -201,6 +213,7 @@ impl Data {
             set(&unanswered, None, Some(total), &unanswered_label, "Unanswered");
             set(&incorrect, None, Some(0), &incorrect_label, "Incorrect");
             set(&correct, None, Some(0), &correct_label, "Correct");
+            rows.borrow_mut().iter_mut().for_each(|row| row.1.set_unanswered());
         });
     }
     pub fn connect_display_selected(&self) {
