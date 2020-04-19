@@ -1,6 +1,6 @@
 [package]
 name = "study"
-version = "0.1.0"
+version = "1.0.0"
 authors = ["Justus Croskery <justus@olmmcc.tk>"]
 edition = "2018"
 
@@ -13,6 +13,4 @@ gdk-pixbuf = "0.8.0"
 glib = "0.9.3"
 serde_json = "1.0.51"
 rand = "0.7.3"
-[dependencies.gtk]
-version = "0.8.1"
-features = ["v3_24", "embed-lgpl-docs"]
+gtk = "0.8.1"

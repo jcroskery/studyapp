@@ -6,8 +6,6 @@ use gio::{ApplicationExt};
 use gtk::prelude::*;
 use gtk::{Application, ApplicationWindow, Window};
 
-use std::env;
-
 use data::Data;
 use file::Images;
 
@@ -29,5 +27,5 @@ fn main() {
         data.connect_submit_answer();
         window.show_all();
     });
-    application.run(&env::args().collect::<Vec<_>>());
+    application.run(&[]);
 }
