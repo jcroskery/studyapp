@@ -19,7 +19,9 @@ pub fn read_file(data: &mut Data, images: &Images) {
         let definition: String = serde_json::from_value(value[key]["name"].clone()).unwrap();
         let indexes: Vec<i32> = serde_json::from_value(value[key]["required"].clone()).unwrap();
         let words: Vec<&str> = definition.split_whitespace().collect();
-        let required = indexes.iter().map(|i| words[*i as usize].to_string()).collect();
+        let required = indexes.iter().map(|i| words[*i as usize].chars().filter(|x| {
+            *x != ',' && *x != ';'
+        }).collect()).collect();
         data.add(Row::new(
             key.to_string(),
             None,

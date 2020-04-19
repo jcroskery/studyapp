@@ -158,7 +158,7 @@ impl Data {
                 if row.state == State::UNANSWERED {
                     let user_definition = format!("{}", answer_entry.get_text().unwrap());
                     set(&unanswered, Some(-1), None, &unanswered_label, "Unanswered");
-                    if is_answer_correct(&user_definition, &row.definition) {
+                    if is_answer_correct(&user_definition, &row.required) {
                         row.set_correct();
                         your_box.hide();
                         correct_box.hide();
@@ -284,12 +284,13 @@ impl Data {
     }
 }
 
-fn is_answer_correct(user_definition: &str, definition: &str) -> bool {
-    if user_definition.to_lowercase() == definition.to_lowercase() {
-        true
-    } else {
-        false
+fn is_answer_correct(user_definition: &str, definition: &Vec<String>) -> bool {
+    for x in definition {
+        if user_definition.contains(x) {
+            return false;
+        }
     }
+    true
 }
 
 fn set(var: &Rc<RefCell<i32>>, increase: Option<i32>, value: Option<i32>, label: &Label, name: &str) {
