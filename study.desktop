@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0.0
+Type=Application
+Name=Study
+Exec=study
+Comment=A study helper for music theory written in Rust.
+Icon=study
+Terminal=false
+Categories=Music;GTK;
