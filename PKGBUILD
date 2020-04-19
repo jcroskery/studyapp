@@ -13,4 +13,5 @@ package() {
   install -Dm 755 ../target/release/${pkgname} -t "${pkgdir}/usr/bin"
   install -Dm 755 ../${pkgname}.desktop -t "${pkgdir}/usr/share/applications"
   install -Dm 755 ../${pkgname}.png "${pkgdir}/usr/share/icons/hicolor/256x256/apps/${pkgname}.png"
+  install -Dm 755 ../${pkgname}_locolor.png "${pkgdir}/usr/share/icons/hicolor/32x32/apps/${pkgname}.png"
 }
