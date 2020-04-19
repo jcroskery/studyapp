@@ -16,11 +16,15 @@ pub fn read_file(data: &mut Data, images: &Images) {
     let mut keys: Vec<&String> = value.as_object().unwrap().keys().collect();
     keys.shuffle(&mut rand::thread_rng());
     for key in keys {
-        let definition: String = serde_json::from_value(value[key].clone()).unwrap();
+        let definition: String = serde_json::from_value(value[key]["name"].clone()).unwrap();
+        let indexes: Vec<i32> = serde_json::from_value(value[key]["required"].clone()).unwrap();
+        let words: Vec<&str> = definition.split_whitespace().collect();
+        let required = indexes.iter().map(|i| words[*i as usize].to_string()).collect();
         data.add(Row::new(
             key.to_string(),
             None,
             definition,
+            required,
             i,
             images.clone(),
         ));

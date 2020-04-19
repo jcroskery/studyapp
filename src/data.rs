@@ -30,6 +30,7 @@ pub struct Row {
     term: String,
     user_definition: Option<String>,
     definition: String,
+    required: Vec<String>,
     box_row: ListBoxRow,
     id: i32,
     state: State,
@@ -49,6 +50,7 @@ impl Row {
         term: String,
         user_definition: Option<String>,
         definition: String,
+        required: Vec<String>,
         id: i32,
         images: Images,
     ) -> Self {
@@ -70,6 +72,7 @@ impl Row {
             term,
             user_definition,
             definition,
+            required,
             state,
             id,
             box_row,
