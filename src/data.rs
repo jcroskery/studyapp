@@ -286,7 +286,7 @@ impl Data {
 
 fn is_answer_correct(user_definition: &str, definition: &Vec<String>) -> bool {
     for x in definition {
-        if user_definition.contains(x) {
+        if !user_definition.contains(x) {
             return false;
         }
     }
