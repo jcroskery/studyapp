@@ -33,6 +33,12 @@
             2
         ]
     },
+    "allargando": {
+        "name": "broadening, becoming slower",
+        "required": [
+            0
+        ]
+    },
     "allegretto": {
         "name": "fairly fast",
         "required": [
@@ -67,6 +73,13 @@
             1
         ]
     },
+    "arco": {
+        "name": "resume bowing",
+        "required": [
+            0, 
+            1
+        ]
+    },
     "a tempo": {
         "name": "return to the original tempo",
         "required": [
@@ -75,10 +88,32 @@
             4
         ]
     },
+    "attacca": {
+        "name": "procede without a break",
+        "required": [
+            0,
+            1,
+            3
+        ]
+    },
     "bene": {
         "name": "well",
         "required": [
             0
+        ]
+    },
+    "bewegt": {
+        "name": "moving",
+        "required": [
+            0
+        ]
+    },
+    "calando": {
+        "name": "becoming slower and softer",
+        "required": [
+            0,
+            1,
+            3
         ]
     },
     "cantabile": {
@@ -87,10 +122,26 @@
             2
         ]
     },
+    "cedez": {
+        "name": "yield; hold the tempo back",
+        "required": [
+            0,
+            1,
+            3
+        ]
+    },
     "colla": {
         "name": "with",
         "required": [
             0
+        ]
+    },
+    "comodo": {
+        "name": "at a comfortable, easy tempo",
+        "required": [
+            0,
+            2,
+            4
         ]
     },
     "con": {
@@ -129,6 +180,13 @@
     },
     "con moto": {
         "name": "with motion",
+        "required": [
+            0,
+            1
+        ]
+    },
+    "con sordino": {
+        "name": "with mute",
         "required": [
             0,
             1
@@ -235,6 +293,18 @@
             0
         ]
     },
+    "langsam": {
+        "name": "slow, slowly",
+        "required": [
+            0
+        ]
+    },
+    "largamente": {
+        "name": "broadly",
+        "required": [
+            0
+        ]
+    },
     "larghetto": {
         "name": "fairly slow",
         "required": [
@@ -255,6 +325,12 @@
             0
         ]
     },
+    "leger": {
+        "name": "light, lightly",
+        "required": [
+            0
+        ]
+    },
     "leggiero": {
         "name": "light, nimble, quick",
         "required": [
@@ -263,10 +339,23 @@
             2
         ]
     },
+    "lentement": {
+        "name": "slowly",
+        "required": [
+            0
+        ]
+    },
     "lento": {
         "name": "slow",
         "required": [
             0
+        ]
+    },
+    "l'istesso tempo": {
+        "name": "the same tempo",
+        "required": [
+            1,
+            2
         ]
     },
     "loco": {
@@ -309,6 +398,12 @@
             0
         ]
     },
+    "massig": {
+        "name": "moderate, moderately",
+        "required": [
+            0
+        ]
+    },
     "meno": {
         "name": "less",
         "required": [
@@ -336,8 +431,22 @@
             1
         ]
     },
+    "mit Ausdruck": {
+        "name": "with expression",
+        "required": [
+            0,
+            1
+        ]
+    },
     "moderato": {
         "name": "at a moderate tempo",
+        "required": [
+            2,
+            3
+        ]
+    },
+    "modere": {
+        "name": "broadening, becoming slower",
         "required": [
             2,
             3
@@ -347,6 +456,13 @@
         "name": "much, very",
         "required": [
             0
+        ]
+    },
+    "mouvement": {
+        "name": "tempo, motion",
+        "required": [
+            0,
+            1
         ]
     },
     "non": {
@@ -392,6 +508,13 @@
         "required": [
             0,
             1
+        ]
+    },
+    "pizzicato": {
+        "name": "pluck the string",
+        "required": [
+            0,
+            2
         ]
     },
     "poco": {
@@ -449,6 +572,13 @@
             2
         ]
     },
+    "ritenuto": {
+        "name": "suddenly slower, held back",
+        "required": [
+            0,
+            1
+        ]
+    },
     "rubato": {
         "name": "with some freedom of tempo to enhance musical expression",
         "required": [
@@ -457,8 +587,20 @@
             4
         ]
     },
+    "schnell": {
+        "name": "fast",
+        "required": [
+            0
+        ]
+    },
     "secondo": {
         "name": "second, second or lower part of a duet",
+        "required": [
+            0
+        ]
+    },
+    "sehr": {
+        "name": "very",
         "required": [
             0
         ]
@@ -502,6 +644,13 @@
         "name": "detached",
         "required": [
             0
+        ]
+    },
+    "stringendo": {
+        "name": "pressing, becoming faster",
+        "required": [
+            0,
+            2
         ]
     },
     "subito": {
@@ -557,6 +706,12 @@
             2,
             4,
             5
+        ]
+    },
+    "vite": {
+        "name": "fast",
+        "required": [
+            0
         ]
     },
     "vivace": {
