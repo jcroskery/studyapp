@@ -448,8 +448,8 @@
     "modere": {
         "name": "broadening, becoming slower",
         "required": [
-            2,
-            3
+            1,
+            2
         ]
     },
     "molto": {
